@@ -1,16 +1,11 @@
 import re
 
 def lengthFilter(sentence):
-    result=[]
-    for item in sentence:
-        if(len(item)>3 and len(item)<50):
-            result.append(item)
-    return result
+    return [item for item in sentence if (len(item)>3 and len(item)<50)]
 
 def readText(path):
-    f = open(path, encoding='utf-8')
-    line = f.read()
-    f.close()
+    with open(path, encoding='utf-8') as f:
+        line = f.read()
     line=line.replace("\n","")
 
     return line

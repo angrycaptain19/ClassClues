@@ -31,15 +31,11 @@ def tidySentence(content):
 
 # 从图形界面中获取路径
 def getPath():
-    path = tkinter.filedialog.askopenfilename()
-    return path
+    return tkinter.filedialog.askopenfilename()
 
 #获取标题大小的边界
 def getTitleBound(layout):
-    lengthList = []
-    for x in layout:
-        if(x.height<100):
-            lengthList.append(x.height)
+    lengthList = [x.height for x in layout if (x.height<100)]
     lengthList = list(set(lengthList))
     if(len(lengthList)):
         return median(lengthList)
@@ -62,37 +58,36 @@ def parse(path):#读取pdf内容并转化为文本
     # 检测文档是否提供txt转换，不提供就忽略
     if not doc.is_extractable:
         raise PDFTextExtractionNotAllowed
-    else:
-        # 创建PDf 资源管理器 来管理共享资源
-        rsrcmgr = PDFResourceManager()
-        # 创建一个PDF设备对象
-        laparams = LAParams()
-        device = PDFPageAggregator(rsrcmgr, laparams=laparams)
-        # 创建一个PDF解释器对象
-        interpreter = PDFPageInterpreter(rsrcmgr, device)
-        # length_list = []
-        content = {'Title': "", 'Text': ""}
-        # 设计一个变量用于标题的对其
-        titleCount = 0
-        for page in PDFPage.create_pages(doc):  # doc.get_pages() 获取page列表
-            interpreter.process_page(page)
-            # 接受该页面的LTPage对象
-            layout = device.get_result()
-            bound=getTitleBound(layout)
+    # 创建PDf 资源管理器 来管理共享资源
+    rsrcmgr = PDFResourceManager()
+    # 创建一个PDF设备对象
+    laparams = LAParams()
+    device = PDFPageAggregator(rsrcmgr, laparams=laparams)
+    # 创建一个PDF解释器对象
+    interpreter = PDFPageInterpreter(rsrcmgr, device)
+    # length_list = []
+    content = {'Title': "", 'Text': ""}
+    # 设计一个变量用于标题的对其
+    titleCount = 0
+    for page in PDFPage.create_pages(doc):  # doc.get_pages() 获取page列表
+        interpreter.process_page(page)
+        # 接受该页面的LTPage对象
+        layout = device.get_result()
+        bound=getTitleBound(layout)
 
 
-            for x in layout:
-                if (isinstance(x, LTTextBoxHorizontal)):
-                    results = x.get_text()
-                    if (x.height > bound):
-                        #标题一般没有明显的分割
-                        titleCount+=1
-                        content['Title']=str(titleCount)+'**'+content['Title']+results.replace(' ','')
-                        content['Text'] = content['Text'] + '\n'+str(titleCount)+'\n'
-                    else:
-                        content['Text']=content['Text']+results.replace('\n','').replace(' ','')
-        content=tidySentence(content)
-        return content
+        for x in layout:
+            if (isinstance(x, LTTextBoxHorizontal)):
+                results = x.get_text()
+                if (x.height > bound):
+                    #标题一般没有明显的分割
+                    titleCount+=1
+                    content['Title']=str(titleCount)+'**'+content['Title']+results.replace(' ','')
+                    content['Text'] = content['Text'] + '\n'+str(titleCount)+'\n'
+                else:
+                    content['Text']=content['Text']+results.replace('\n','').replace(' ','')
+    content=tidySentence(content)
+    return content
                 #     # 需要写出编码格式
                 #     with open(new_path, 'a', encoding='utf-8') as f:
                 #         results = x.get_text()

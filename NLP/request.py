@@ -19,11 +19,10 @@ def getDBpedia(str):
 #将获取的json文件转化成三元组
 def json2triad(jsonFile):
     result=[]
-    if(jsonFile['message']=='success'):
-        if ('entity' in jsonFile['data']):
-            entity=jsonFile['data']['entity']
-            for item in jsonFile['data']['avp']:
-                result.append([entity,item[0],item[1]])
+    if (jsonFile['message'] == 'success') and ('entity' in jsonFile['data']):
+        entity=jsonFile['data']['entity']
+        for item in jsonFile['data']['avp']:
+            result.append([entity,item[0],item[1]])
     return result
 
 
