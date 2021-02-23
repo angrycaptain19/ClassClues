@@ -5,10 +5,7 @@ import time
 
 #获取句子依存关系中的中心词
 def getHEA(dep,seg):
-    tempHEAword=[]
-    for item in dep:
-        if item[2] == "HED":
-            tempHEAword.append(item[0] - 1)
+    tempHEAword = [item[0] - 1 for item in dep if item[2] == "HED"]
     for item in dep:
         if item[2] == "COO" and (item[1] - 1 in tempHEAword) :
             tempHEAword.append(item[0] - 1)
@@ -45,8 +42,7 @@ def standardizationKeyword(keyword):
 #获取短语开始部分
 def getBeginPosition(word,dep,seg):
     p = seg.index(word) + 1
-    Position = []
-    Position.append(p)
+    Position = [p]
     #判断是否所有相关词语都已加入
     flag=0
     while flag!=1:
@@ -75,8 +71,7 @@ def getTogether(seg,beginPosition,endPosition):
 #将词语扩展
 def expandWord(word,dep,seg):
     beginPosition=getBeginPosition(word,dep,seg)
-    str=getTogether(seg,beginPosition,seg.index(word) + 1)
-    return str
+    return getTogether(seg,beginPosition,seg.index(word) + 1)
 
 
 # 获取一个句子中所包含的三元组关系
@@ -138,11 +133,7 @@ def resolveNouns(ltp,str):
     pos=ltp.pos(hidden)[0]
     # 获得分词列表
     seg=seg_temp[0]
-    result=[]
-    for index in range(len(pos)):
-        if(pos[index]=='n'):
-            result.append(seg[index])
-    return result
+    return [seg[index] for index in range(len(pos)) if (pos[index]=='n')]
 
 #处理从视频、图片中返回的信号
 def processTimeData(ltp,list):
